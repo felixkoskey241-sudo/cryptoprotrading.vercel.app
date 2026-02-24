@@ -1,0 +1,101 @@
+// ==================== DYNAMIC TOP WINNERS (AUTO-UPDATING) ====================
+function generateTopWinners() {
+    // Pool of random names
+    const firstNames = ['Felix', 'Sarah', 'Michael', 'David', 'James', 'Emma', 'John', 'Mary', 'Peter', 'Grace', 'Ahmed', 'Fatima', 'Joseph', 'Ruth', 'Daniel', 'Rebecca', 'Samuel', 'Esther', 'Benjamin', 'Hannah'];
+    const lastInitials = ['K.', 'M.', 'O.', 'W.', 'N.', 'A.', 'D.', 'B.', 'L.', 'S.', 'T.', 'C.', 'G.', 'H.', 'R.'];
+    
+    // Pool of locations
+    const locations = [
+        'Nairobi, Kenya',
+        'Lagos, Nigeria',
+        'Johannesburg, SA',
+        'Cairo, Egypt',
+        'Accra, Ghana',
+        'Kigali, Rwanda',
+        'Mombasa, Kenya',
+        'Dar es Salaam, TZ',
+        'Kampala, Uganda',
+        'Addis Ababa, ET',
+        'Lusaka, Zambia',
+        'Harare, Zimbabwe',
+        'Dakar, Senegal',
+        'Abuja, Nigeria',
+        'Pretoria, SA',
+        'Kisumu, Kenya',
+        'Eldoret, Kenya',
+        'Nakuru, Kenya',
+        'Port Harcourt, NG',
+        'Durban, SA'
+    ];
+    
+    const emojis = ['👨', '👩', '🧑'];
+    
+    // Generate 6 random winners
+    const winners = [];
+    for (let i = 1; i <= 6; i++) {
+        const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+        const lastInitial = lastInitials[Math.floor(Math.random() * lastInitials.length)];
+        const name = `${firstName} ${lastInitial}`;
+        const location = locations[Math.floor(Math.random() * locations.length)];
+        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+        
+        // Generate random but realistic profits (higher ranks get more)
+        const baseProfit = 15000 - (i * 1500); // Decreasing by rank
+        const randomVariation = (Math.random() * 2000) - 1000; // ±1000 variation
+        const profit = Math.floor(baseProfit + randomVariation);
+        
+        // Generate trades proportional to profit
+        const trades = Math.floor(profit / 10) + Math.floor(Math.random() * 100);
+        
+        winners.push({
+            rank: i,
+            name: name,
+            location: location,
+            emoji: emoji,
+            profit: '$' + profit.toLocaleString(),
+            trades: trades.toLocaleString()
+        });
+    }
+    
+    // Render winners
+    let html = '';
+    winners.forEach(winner => {
+        html += `
+            <div class="winner-card">
+                <div class="winner-rank">${winner.rank}</div>
+                <div class="winner-header">
+                    <div class="winner-avatar-large">${winner.emoji}</div>
+                    <div class="winner-details">
+                        <h4>${winner.name}</h4>
+                        <div class="winner-location">${winner.location}</div>
+                    </div>
+                </div>
+                <div class="winner-stats">
+                    <div class="winner-stat">
+                        <div class="winner-stat-label">Total Profit</div>
+                        <div class="winner-stat-value">${winner.profit}</div>
+                    </div>
+                    <div class="winner-stat">
+                        <div class="winner-stat-label">Trades</div>
+                        <div class="winner-stat-value">${winner.trades}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    const grid = document.getElementById('topWinnersGrid');
+    if (grid) grid.innerHTML = html;
+}
+
+// ==================== WELCOME PAGE WITH AUTO-UPDATE ====================
+function initWelcomePage() {
+    generateLiveTraders();
+    generateTopWinners(); // Initial load
+    
+    // Update live traders every 5 seconds
+    setInterval(generateLiveTraders, 5000);
+    
+    // Update top winners every 30 seconds
+    setInterval(generateTopWinners, 30000);
+}
